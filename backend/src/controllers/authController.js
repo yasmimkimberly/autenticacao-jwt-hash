@@ -90,3 +90,15 @@ export async function login(req, res) {
     return res.status(500).json({ mensagem: "Erro no login" });
   }
 }
+
+export async function listarUsuarios(req, res) {
+  try {
+    const { rows: usuarios } = await pool.query(
+      "SELECT id, nome, email, criado_em from usuarios ORDER BY id",
+    );
+    return res.json(usuarios);
+  } catch (erro) {
+    console.error(erro);
+    return res.status(500).json({ mensagem: "Erro ao listar usuarios" });
+  }
+}
