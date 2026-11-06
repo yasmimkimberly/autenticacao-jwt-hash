@@ -47,3 +47,46 @@ export async function cadastrar(req, res) {
     });
   }
 }
+export async function login(req, res) {
+  try {
+    const { nome, email, senha } = req.body;
+    if (!nome || !email || !senha) {
+      return res.status(400).json({
+        mensagem: "Nome , email e senha são obrigatórios",
+      });
+    }
+
+    const { rows: usuarios } = await pool.query(
+      "SELECT id, email, senha FROM usuarios WHERE email = $1 LIMIT 1",
+      [email],
+    );
+
+    if (usuarios.length === 0) {
+      return res.status(401).json({
+        mensagem: "Email ou senha inválidos",
+      });
+    }
+    const encontrado = usuarios[0];
+    const senhaValida = await bcrypt.compare(senha, encontrado.senha);
+    if (!senhaValida) {
+      return res.status(401).json({
+        mensagem: "Email ou senha inválidos",
+      });
+    }
+
+    const token = jwt.sign(
+      { id: encontrado.id, email: encontrado.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "120s" },
+    );
+
+    return res.json({
+      mensagem: "Login realizado com sucesso",
+      usuario: { id: encontrado.id, email: encontrado.email },
+      token,
+    });
+  } catch (erro) {
+    console.error(erro);
+    return res.status(500).json({ mensagem: "Erro no login" });
+  }
+}
