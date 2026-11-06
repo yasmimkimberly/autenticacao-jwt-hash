@@ -4,9 +4,10 @@ import {
   listarUsuarios,
   login,
 } from "../controllers/authController.js";
+import { autenticar } from "../middleware/authMiddleware.js";
 
 const router = Router();
-router.post("/usuarios", cadastrar);
+router.post("/cadastrar", cadastrar);
 router.post("/login", login);
-router.get("/usuarios", listarUsuarios);
+router.get("/usuarios", autenticar, listarUsuarios);
 export default router;
