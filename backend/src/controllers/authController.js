@@ -77,7 +77,7 @@ export async function login(req, res) {
     const token = jwt.sign(
       { id: encontrado.id, email: encontrado.email },
       process.env.JWT_SECRET,
-      { expiresIn: "120s" },
+      { expiresIn: "240s" },
     );
 
     return res.json({
@@ -101,4 +101,8 @@ export async function listarUsuarios(req, res) {
     console.error(erro);
     return res.status(500).json({ mensagem: "Erro ao listar usuarios" });
   }
+}
+
+export async function me(req, res) {
+  return res.json({ usuario: req.usuario });
 }
